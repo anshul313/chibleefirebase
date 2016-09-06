@@ -1,0 +1,9 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "Chiblee/gas_station/gas_station": {
+      ".indexOn": ["Category", "SubCategory", "Latitude", "Longitude"]
+    }
+  }
+}
