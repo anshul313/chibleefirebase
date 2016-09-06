@@ -45,8 +45,8 @@ app.use(cookieParser());
 app.use(flash());
 
 firebase.initializeApp({
-  databaseURL: 'https://qykly-df70e.firebaseio.com',
-  // databaseURL: 'https://chiblee-app.firebaseio.com/',
+  // databaseURL: 'https://qykly-df70e.firebaseio.com',
+  databaseURL: 'https://chiblee-app.firebaseio.com/',
   serviceAccount: './../service_account.json'
 });
 var db = firebase.database();
@@ -153,7 +153,7 @@ app.get('/api3/insert', function(req, res) {
   var es = require('event-stream');
   var postsRef = ref.child("ATM");
 
-  var fileStream = fs.createReadStream('./../Adrash Nagar.json', {
+  var fileStream = fs.createReadStream('./../ATM.json', {
     encoding: 'utf8'
   });
   fileStream.pipe(JSONStream.parse('*')).pipe(es.through(function(
@@ -185,8 +185,8 @@ app.get('/api3/insert', function(req, res) {
             "Longitude": data[i].results[j].geometry.location.lng,
             "placeId": data[i].results[j].place_id,
             "Area": area,
-            "Category": "gas_station",
-            "SubCategory": "gas_station",
+            "Category": "atm",
+            "SubCategory": "atm",
             "Name": data[i].results[j].name,
             "Home Delivery": "No",
             "Remarks": "-",
