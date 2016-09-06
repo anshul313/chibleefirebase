@@ -89,7 +89,7 @@ app.get('/', function(req, res) {
   });
 });
 
-app.get('/update', function(req, res) {
+app.get('/api3/update', function(req, res) {
   var usersRef = ref.child("users");
   var hopperRef = usersRef.child("gracehop");
   hopperRef.update({
@@ -100,7 +100,7 @@ app.get('/update', function(req, res) {
   });
 });
 
-app.get('/push', function(req, res) {
+app.get('/api3/push', function(req, res) {
   var postsRef = ref.child("posts");
 
   postsRef.child('Anshul').push([{
@@ -128,7 +128,7 @@ app.get('/push', function(req, res) {
   // });
 });
 
-app.get('/get', function(req, res) {
+app.get('/api3/get', function(req, res) {
   var ref = db.ref("Chiblee/posts");
   ref.on("value", function(snapshot) {
     var result = snapshot.val();
@@ -146,7 +146,7 @@ var server = app.listen(9999, function() {
   console.log(" Express is running on port 9999 !!!!!");
 });
 
-app.get('/insert', function(req, res) {
+app.get('/api3/insert', function(req, res) {
   var i = 0;
   var fs = require('fs');
   var JSONStream = require('JSONStream');
@@ -239,7 +239,7 @@ app.get('/insert', function(req, res) {
 });
 
 
-app.post('/getgeodata', function(req, res) {
+app.post('/api3/getgeodata', function(req, res) {
   var finalresult = [];
   var asyncTasks = [];
   var ref1 = db.ref('Chiblee').child(req.body.category).child(req.body.subcategory);
@@ -303,7 +303,7 @@ app.post('/getgeodata', function(req, res) {
 });
 
 
-app.post('/testdata', function(req, res) {
+app.post('/api3/testdata', function(req, res) {
   console.log(req.body.lat);
   console.log(req.body.lng);
   var finalresult = [];
