@@ -169,7 +169,7 @@ app.get('/api3/insert', function(req, res) {
   });
 
   function processOneCustomer(data, es) {
-    console.log(data.length);
+    // console.log(data.length);
     for (i = 0; i < data.length; i++) {
       if (data[i].results.length > 0) {
         // console.log("lat", data[i].results[0].geometry.location.lat);
