@@ -272,7 +272,7 @@ app.post('/api3/getgeodata', function(req, res) {
   });
   geoQuery.on("ready", function() {
     var myObjects = _.sortBy(arr, 'distance');
-    console.log(myObjects);
+    // console.log(myObjects);
     _.forEach(myObjects, function(result) {
       asyncTasks.push(function(callback) {
         var res = result.key.split("*")
