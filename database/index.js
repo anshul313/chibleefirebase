@@ -46,11 +46,11 @@ app.use(flash());
 
 firebase.initializeApp({
   // databaseURL: 'https://qykly-df70e.firebaseio.com',
-  databaseURL: 'https://chiblee-app.firebaseio.com/',
+  databaseURL: 'https://chiblee-app-c2f87.firebaseio.com/',
   serviceAccount: './../service_account.json'
 });
 var db = firebase.database();
-var ref = db.ref("Chiblee");
+// var ref = db.ref("Category");
 
 
 app.get('/auth', function(req, res) {
@@ -148,93 +148,103 @@ var server = app.listen(9999, function() {
 
 app.get('/api3/insert', function(req, res) {
   var i = 0;
+  var count = 1;
   var fs = require('fs');
   var JSONStream = require('JSONStream');
   var es = require('event-stream');
-  var postsRef = ref.child("ATM");
 
-  var fileStream = fs.createReadStream('./../ATM.json', {
-    encoding: 'utf8'
-  });
-  fileStream.pipe(JSONStream.parse('*')).pipe(es.through(function(
-    data) {
-    // console.log('printing one customer object read from file ::');
-    // console.log(data, "   : ", ++i);
-    this.pause();
-    processOneCustomer(data, this);
-    return data;
-  }), function end() {
-    console.log('stream reading ended');
-    this.emit('end');
-  });
+  for (var k = 381; k <= 438; k++) {
+    console.log('K : ', k);
+    var fileStream = fs.createReadStream(
+      './../liquorstore/liquor_(' + k.toString() + ').json', {
+        encoding: 'utf8'
+      });
+    fileStream.pipe(JSONStream.parse('*')).pipe(es.through(function(
+      data) {
+      // console.log('printing one customer object read from file ::');
+      // console.log(data, "   : ", ++i);
+      this.pause();
+      processOneCustomer(data, this);
+      return data;
+    }), function end() {
+      console.log('stream reading ended');
+      this.emit('end');
+    });
 
-  function processOneCustomer(data, es) {
-    // console.log(data.length);
-    for (i = 0; i < data.length; i++) {
-      if (data[i].results.length > 0) {
-        // console.log("lat", data[i].results[0].geometry.location.lat);
-        // console.log("lng", data[i].results[0].geometry.location.lng);
-        for (var j = 0; j < data[i].results.length; j++) {
+    function processOneCustomer(data, es) {
+      console.log(data.length);
+      for (i = 0; i < data.length; i++) {
+        if (data[i].results.length > 0) {
+          // console.log("lat", data[i].results[0].geometry.location.lat);
+          // console.log("lng", data[i].results[0].geometry.location.lng);
+          for (var j = 0; j < data[i].results.length; j++) {
 
-          var vicinityArea = data[i].results[j].vicinity.split(",");
-          var area = vicinityArea[vicinityArea.length - 2];
-          // console.log("Area : ", area);
+            var vicinityArea = data[i].results[j].vicinity.split(",");
+            if (vicinityArea.length > 2) {
+              var area = vicinityArea[vicinityArea.length - 2];
+            } else {
+              var area = data[i].results[j].vicinity;
+            }
 
-          var firebaseData = new Object({
-            "Latitude": data[i].results[j].geometry.location.lat,
-            "Longitude": data[i].results[j].geometry.location.lng,
-            "placeId": data[i].results[j].place_id,
-            "Area": area,
-            "Category": "atm",
-            "SubCategory": "atm",
-            "Name": data[i].results[j].name,
-            "Home Delivery": "No",
-            "Remarks": "-",
-            "Open": "24x7",
-            "Close": "-",
-            "Multiple Timing": "NA",
-            "Contact No": "-",
-            "Address": data[i].results[j].vicinity,
-            "Tag": "facial, manicure, pedicure, makeup",
-            "Image": "https://s3-ap-southeast-1.amazonaws.com/chiblee/krishna beauty parlour 28.5129961.jpg",
-            "Type": data[i].results[j].types,
-            "Time": Date.now(),
-            "Upload Time": Date.now(),
-            "status": "live",
-            "Username": data[i].results[j].scope
-          });
-          var ref1 = db.ref('Chiblee').child(firebaseData['Category']).child(
-            firebaseData['SubCategory']);
-          var geoRef = new GeoFire(ref1);
-          var postsRef = ref.child(firebaseData['Category']);
-          var key = data[i].results[
-            j].place_id;
-          console.log('Key 1 : ', key);
-          geoRef.set(firebaseData['Category'] + '*' +
-            firebaseData['SubCategory'] + '*' + key, [
-              firebaseData['Latitude'], firebaseData[
-                'Longitude']
-            ]);
-          // .then(
-          //   function() {
-          //     console.log(key);
-          //     console.log("Provided key has been added to GeoFire");
-          //
-          //   },
-          //   function(error) {
-          //     console.log("Error: " + error);
-          //   });
+            // console.log("Area : ", area);
 
-          postsRef.child(firebaseData['SubCategory']).child(data[i].results[
-            j].place_id).set(
-            firebaseData,
-            function() {
-              console.log('successfully inserted');
+            var firebaseData = new Object({
+              "Latitude": data[i].results[j].geometry.location.lat,
+              "Longitude": data[i].results[j].geometry.location.lng,
+              "placeId": data[i].results[j].place_id,
+              "Area": area,
+              "Category": "Food",
+              "SubCategory": "Wine Shop",
+              "Name": data[i].results[j].name,
+              "Home Delivery": "No",
+              "Remarks": "-",
+              "Open": "24x7",
+              "Close": "-",
+              "Multiple Timing": "NA",
+              "Contact No": "-",
+              "Address": data[i].results[j].vicinity,
+              "Tag": ["Beer", "Whiskey", "Rum", "Scotch", "Wine"],
+              "Image": data[i].results[j].icon,
+              "Type": data[i].results[j].types,
+              "Time": Date.now(),
+              "Upload Time": Date.now(),
+              "status": "live",
+              "Username": data[i].results[j].scope
             });
+            var ref1 = db.ref('Chiblee').child(firebaseData['Category']).child(
+              firebaseData['SubCategory']);
+            var geoRef = new GeoFire(ref1);
+
+            var key = data[i].results[
+              j].place_id;
+            console.log('Key 1 : ', key);
+            geoRef.set(firebaseData['Category'] + '*' +
+              firebaseData['SubCategory'] + '*' + key, [
+                firebaseData['Latitude'], firebaseData[
+                  'Longitude']
+              ]);
+            // .then(
+            //   function() {
+            //     console.log(key);
+            //     console.log("Provided key has been added to GeoFire");
+            //
+            //   },
+            //   function(error) {
+            //     console.log("Error: " + error);
+            //   });
+
+            var postsRef = db.ref('Chiblee').child(firebaseData['Category']);
+            postsRef.child(firebaseData['SubCategory']).child(data[i].results[
+              j].place_id).set(
+              firebaseData,
+              function() {
+                console.log('successfully inserted : ', count++);
+              });
+          }
         }
       }
     }
-    res.send('successfully insetred');
+    // res.send('successfully insetred');
   }
 });
 
