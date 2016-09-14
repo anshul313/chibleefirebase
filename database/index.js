@@ -310,7 +310,7 @@ app.post('/api3/getgeodata', function(req, res) {
       if(start > result.length-10) {
         res.json({
           result : [],
-          message: 'No More Data'
+          message: 'NO_MORE_DATA'
         });
       }else {
         if(end > result.length) {
@@ -324,7 +324,7 @@ app.post('/api3/getgeodata', function(req, res) {
         if (!keysEntered) {
           res.json({
             result: finalresult,
-            message: 'ok'
+            message: 'OK'
           });
         }
       }
