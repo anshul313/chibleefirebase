@@ -255,9 +255,13 @@ app.post('/api3/getgeodata', function(req, res) {
   var asyncTasks = [];
   var ref1 = db.ref('Chiblee').child(req.body.category).child(req.body.subcategory);
   var geoRef = new GeoFire(ref1);
+  var radius = 2;
+  if(req.body.radius) {
+    radius = req.body.radius;
+  }
   var geoQuery = geoRef.query({
     center: [req.body.lat, req.body.lng],
-    radius: req.body.radius //kilometers
+    radius: radius //kilometers
   });
   var arr = [];
   var keysEntered = false;
