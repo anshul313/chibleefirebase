@@ -153,10 +153,10 @@ app.get('/api3/insert', function(req, res) {
   var JSONStream = require('JSONStream');
   var es = require('event-stream');
 
-  for (var k = 381; k <= 438; k++) {
+  for (var k = 311; k <= 400; k++) {
     console.log('K : ', k);
     var fileStream = fs.createReadStream(
-      './../liquorstore/liquor_(' + k.toString() + ').json', {
+      './../atm/atm_(' + k.toString() + ').json', {
         encoding: 'utf8'
       });
     fileStream.pipe(JSONStream.parse('*')).pipe(es.through(function(
@@ -189,40 +189,41 @@ app.get('/api3/insert', function(req, res) {
             // console.log("Area : ", area);
 
             var firebaseData = new Object({
-              "Latitude": data[i].results[j].geometry.location.lat,
-              "Longitude": data[i].results[j].geometry.location.lng,
+              "latitude": data[i].results[j].geometry.location.lat,
+              "longitude": data[i].results[j].geometry.location.lng,
               "placeId": data[i].results[j].place_id,
-              "Area": area,
-              "Category": "Food",
-              "SubCategory": "Wine Shop",
-              "Name": data[i].results[j].name,
-              "Home Delivery": "No",
-              "Remarks": "-",
-              "Open": "24x7",
-              "Close": "-",
-              "Multiple Timing": "NA",
-              "Contact No": "-",
-              "Address": data[i].results[j].vicinity,
-              "Tag": ["Beer", "Whiskey", "Rum", "Scotch", "Wine"],
-              "Image": data[i].results[j].icon,
-              "Type": data[i].results[j].types,
-              "Time": Date.now(),
-              "Upload Time": Date.now(),
+              "area": area,
+              "category": "Owl",
+              "subCategory": "ATM",
+              "name": data[i].results[j].name,
+              "homeDelivery": "No",
+              "remarks": "-",
+              "open": "24x7",
+              "close": "-",
+              "multipleTiming": "NA",
+              "contactNo": "-",
+              "address": data[i].results[j].vicinity,
+              "tag": ["ATM"],
+              "image": data[i].results[j].icon,
+              "type": data[i].results[j].types,
+              "time": Date.now(),
+              "uploadtime": Date.now(),
               "status": "live",
-              "Username": data[i].results[j].scope
+              "username": data[i].results[j].scope
             });
-            var ref1 = db.ref('Chiblee').child(firebaseData['Category']).child(
-              firebaseData['SubCategory']);
+            var ref1 = db.ref('Chiblee').child(firebaseData['category']).child(
+              firebaseData['subCategory']);
             var geoRef = new GeoFire(ref1);
 
             var key = data[i].results[
               j].place_id;
             console.log('Key 1 : ', key);
-            geoRef.set(firebaseData['Category'] + '*' +
-              firebaseData['SubCategory'] + '*' + key, [
-                firebaseData['Latitude'], firebaseData[
-                  'Longitude']
+            geoRef.set(firebaseData['category'] + '*' +
+              firebaseData['subCategory'] + '*' + key, [
+                firebaseData['latitude'], firebaseData[
+                  'longitude']
               ]);
+
             // .then(
             //   function() {
             //     console.log(key);
@@ -233,8 +234,8 @@ app.get('/api3/insert', function(req, res) {
             //     console.log("Error: " + error);
             //   });
 
-            var postsRef = db.ref('Chiblee').child(firebaseData['Category']);
-            postsRef.child(firebaseData['SubCategory']).child(data[i].results[
+            var postsRef = db.ref('Chiblee').child(firebaseData['category']);
+            postsRef.child(firebaseData['subCategory']).child(data[i].results[
               j].place_id).set(
               firebaseData,
               function() {
@@ -256,7 +257,7 @@ app.post('/api3/getgeodata', function(req, res) {
   var geoRef = new GeoFire(ref1);
   var geoQuery = geoRef.query({
     center: [req.body.lat, req.body.lng],
-    radius: 5 //kilometers
+    radius: req.body.radius //kilometers
   });
   var arr = [];
   var keysEntered = false;
@@ -300,13 +301,26 @@ app.post('/api3/getgeodata', function(req, res) {
           message: errorHandler.getErrorMessage(err)
         });
       }
-      _.forEach(result, function(vendors) {
-        finalresult.push(vendors);
-      });
-      if (!keysEntered) {
+      var start = req.body.page * 10;
+      var end = start + 10;
+      if(start > result.length-10) {
         res.json({
-          result: finalresult
+          message: 'No More Data'
         });
+      }else {
+        if(end > result.length) {
+          end = result.length;
+        }
+        for(var i = start;i<end;i++)
+          finalresult.push(result[i]);
+        // _.forEach(result, function(vendors) {
+        //   finalresult.push(vendors);
+        // });
+        if (!keysEntered) {
+          res.json({
+            result: finalresult
+          });
+        }
       }
     });
   });
